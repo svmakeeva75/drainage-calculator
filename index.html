@@ -23,8 +23,102 @@
     body{
       margin:0;
       font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,#f8fafc 0%,#edf4fb 100%);
+      background:linear-gradient(180deg,var(--card) 0%,var(--bg) 100%);
       color:var(--text);
+    }
+
+    body.dark{
+      --bg:#0b1220;
+      --card:#0f172a;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --line:#223049;
+      --accent:#60a5fa;
+      --accent-dark:#3b82f6;
+      --accent-light:rgba(96,165,250,.14);
+      --shadow:0 14px 34px rgba(0,0,0,.35);
+    }
+
+    body.dark .topbar{
+      background:rgba(15,23,42,.78);
+      border-bottom:1px solid rgba(34,48,73,.9);
+    }
+
+    body.dark .btn-ghost{
+      color:var(--text);
+      border-color:var(--line);
+    }
+
+    body.dark .btn-ghost:hover{
+      background:rgba(96,165,250,.12);
+      border-color:rgba(96,165,250,.35);
+    }
+
+    body.dark .btn-secondary{
+      background:rgba(148,163,184,.18);
+      color:var(--text);
+    }
+
+    body.dark .btn-secondary:hover{
+      background:rgba(148,163,184,.26);
+    }
+
+    body.dark .landing-side,
+    body.dark .feature,
+    body.dark .house-option,
+    body.dark .field input,
+    body.dark .field select,
+    body.dark .kit-item,
+    body.dark .docs{
+      background:var(--card);
+      border-color:var(--line);
+      color:var(--text);
+    }
+
+    body.dark .kpi .stat,
+    body.dark .stat,
+    body.dark .note{
+      background:rgba(148,163,184,.08);
+      border-color:var(--line);
+      color:var(--text);
+    }
+
+    body.dark .field input,
+    body.dark .field select{
+      border-color:var(--line);
+    }
+
+    body.dark .summary-list{
+      color:rgba(226,232,240,.92);
+    }
+
+    body.dark .result-box{
+      background:rgba(96,165,250,.08);
+      border-color:rgba(96,165,250,.22);
+    }
+
+    body.dark .docs code{
+      background:rgba(148,163,184,.16);
+      color:rgba(226,232,240,.92);
+    }
+
+    .theme-toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+
+    .theme-toggle .theme-dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    body.dark .theme-toggle .theme-dot{
+      box-shadow:0 0 0 3px rgba(96,165,250,.18);
     }
 
     /* ===== Лендинг (приветственный экран) ===== */
@@ -554,6 +648,11 @@
         <button class="btn btn-primary" id="goToCalculatorBtn" type="button">Перейти к калькулятору</button>
         <!-- Кнопка подсказок: прокрутка к блоку инструкции ниже -->
         <button class="btn btn-ghost" id="goToDocsBtn" type="button">Как менять цены</button>
+        <!-- Переключатель темы -->
+        <button class="btn btn-ghost theme-toggle" id="themeToggleBtn" type="button" aria-pressed="false">
+          <span class="theme-dot" aria-hidden="true"></span>
+          <span id="themeToggleLabel">Тёмная тема</span>
+        </button>
       </div>
     </div>
   </header>
@@ -887,6 +986,34 @@
 
     function qsa(selector){
       return document.querySelectorAll(selector);
+    }
+
+    function setTheme(isDark){
+      document.body.classList.toggle('dark', isDark);
+
+      const btn = qs('#themeToggleBtn');
+      const label = qs('#themeToggleLabel');
+      if(btn) btn.setAttribute('aria-pressed', String(isDark));
+      if(label) label.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
+
+      try{
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }catch(e){}
+    }
+
+    function initTheme(){
+      let saved = null;
+      try{
+        saved = localStorage.getItem('theme');
+      }catch(e){}
+
+      if(saved === 'dark' || saved === 'light'){
+        setTheme(saved === 'dark');
+        return;
+      }
+
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(!!prefersDark);
     }
 
     function num(value){
@@ -1252,6 +1379,11 @@
       downloadManagerPricesTemplate();
     });
 
+    initTheme();
+    qs('#themeToggleBtn').addEventListener('click', function(){
+      setTheme(!document.body.classList.contains('dark'));
+    });
+
     qs('#calculateBtn').addEventListener('click', calculate);
     qs('#resetBtn').addEventListener('click', resetForm);
 
@@ -1259,4 +1391,5 @@
     calculate();
   </script>
 </body>
+</html>
 </html>
