@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор водосточной системы</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#d9e2ec;
+      --accent:#2563eb;
+      --accent-dark:#1d4ed8;
+      --accent-light:#eff6ff;
+      --shadow:0 10px 24px rgba(15,23,42,.08);
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#f8fafc 0%,#edf4fb 100%);
+      color:var(--text);
+    }
+
+    /* ===== Лендинг (приветственный экран) ===== */
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter:saturate(180%) blur(10px);
+      background:rgba(248,250,252,.86);
+      border-bottom:1px solid rgba(217,226,236,.9);
+    }
+
+    .topbar-inner{
+      max-width:1180px;
+      margin:0 auto;
+      padding:12px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .brand strong{
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+
+    .brand span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .nav-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn-ghost{
+      background:transparent;
+      border:1px solid var(--line);
+      color:#111827;
+    }
+
+    .btn-ghost:hover{
+      background:#eef2ff;
+      border-color:#c7d2fe;
+    }
+
+    .landing{
+      max-width:1180px;
+      margin:0 auto;
+      padding:22px 24px 6px;
+    }
+
+    .landing-hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:16px;
+      align-items:stretch;
+      margin-bottom:18px;
+    }
+
+    @media (max-width: 960px){
+      .landing-hero{ grid-template-columns:1fr; }
+    }
+
+    .landing-main{
+      border-radius:24px;
+      padding:26px;
+      box-shadow:var(--shadow);
+      background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 100%);
+      color:#fff;
+    }
+
+    .landing-main h1{
+      margin:0 0 10px;
+      font-size:30px;
+      line-height:1.2;
+    }
+
+    .landing-main p{
+      margin:0 0 16px;
+      line-height:1.65;
+      color:rgba(255,255,255,.92);
+      max-width:820px;
+    }
+
+    .landing-side{
+      border-radius:24px;
+      padding:18px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      justify-content:center;
+    }
+
+    .kpi{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .kpi .stat{
+      padding:12px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .kpi .value{
+      font-size:18px;
+      font-weight:800;
+    }
+
+    .features{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin:0 0 12px;
+    }
+
+    @media (max-width: 960px){
+      .features{ grid-template-columns:1fr; }
+    }
+
+    .feature{
+      border-radius:18px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .feature .title{
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .feature .desc{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .container{
+      max-width:1180px;
+      margin:0 auto;
+      padding:24px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 100%);
+      color:#fff;
+      padding:28px;
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+    }
+
+    .hero h1{
+      margin:0 0 10px;
+      font-size:30px;
+      line-height:1.2;
+    }
+
+    .hero p{
+      margin:0;
+      line-height:1.6;
+      color:rgba(255,255,255,.92);
+      max-width:850px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    @media (max-width: 960px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .card h2{
+      margin:0 0 10px;
+      font-size:22px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .section-title{
+      margin:18px 0 10px;
+      font-size:15px;
+      font-weight:700;
+    }
+
+    .house-types{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    @media (max-width: 560px){
+      .house-types{ grid-template-columns:1fr; }
+    }
+
+    .house-option{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      cursor:pointer;
+      transition:.2s ease;
+      background:#fff;
+    }
+
+    .house-option:hover{
+      transform:translateY(-1px);
+      border-color:#a5b4fc;
+    }
+
+    .house-option.active{
+      border-color:var(--accent);
+      background:var(--accent-light);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .house-option .icon{
+      font-size:26px;
+      margin-bottom:6px;
+    }
+
+    .house-option .title{
+      font-weight:700;
+      margin-bottom:4px;
+    }
+
+    .house-option .desc{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .switch-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .toggle-btn{
+      border:none;
+      border-radius:999px;
+      padding:11px 16px;
+      cursor:pointer;
+      font-weight:700;
+      background:#e5e7eb;
+      transition:.2s ease;
+    }
+
+    .toggle-btn.active{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    @media (max-width: 680px){
+      .form-grid{ grid-template-columns:1fr; }
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .field label{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #cfd8e3;
+      border-radius:12px;
+      font-size:15px;
+      background:#fff;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .field small{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .note{
+      margin-top:10px;
+      background:#f8fafc;
+      border:1px dashed #cbd5e1;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:13px;
+      color:#475569;
+      line-height:1.55;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:13px 18px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .btn-primary:hover{
+      background:var(--accent-dark);
+    }
+
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .btn-secondary:hover{
+      background:#d1d5db;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    @media (max-width: 680px){
+      .stats{ grid-template-columns:1fr; }
+    }
+
+    .stat{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .stat .label{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:24px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .result-box{
+      margin-top:14px;
+      padding:16px;
+      border-radius:16px;
+      background:#f9fbff;
+      border:1px solid #dbeafe;
+    }
+
+    .result-box h3{
+      margin:0 0 10px;
+      font-size:18px;
+    }
+
+    .kit-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:10px;
+    }
+
+    .kit-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+    }
+
+    .kit-item .name{
+      font-weight:600;
+    }
+
+    .kit-item .meta{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+    }
+
+    .kit-item .qty{
+      white-space:nowrap;
+      font-weight:800;
+    }
+
+    .summary-list{
+      margin:0;
+      padding-left:18px;
+      line-height:1.65;
+      color:#334155;
+    }
+
+    .alert{
+      margin-top:14px;
+      padding:13px 15px;
+      border-radius:12px;
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .alert-success{
+      background:#ecfdf5;
+      border:1px solid #a7f3d0;
+      color:#065f46;
+    }
+
+    .alert-danger{
+      background:#fef2f2;
+      border:1px solid #fecaca;
+      color:#991b1b;
+    }
+
+    .docs{
+      margin-top:20px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .docs h2{
+      margin-top:0;
+      font-size:22px;
+    }
+
+    .docs code{
+      background:#f3f4f6;
+      padding:2px 6px;
+      border-radius:6px;
+      font-size:13px;
+    }
+
+    .price-caption{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ===================== -->
+  <!-- Приветственный лендинг -->
+  <!-- ===================== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <strong>Калькулятор водосточной системы</strong>
+        <span>Быстрый расчёт + цены менеджера</span>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Кнопка-быстрый переход: прокрутка к калькулятору -->
+        <button class="btn btn-primary" id="goToCalculatorBtn" type="button">Перейти к калькулятору</button>
+        <!-- Кнопка подсказок: прокрутка к блоку инструкции ниже -->
+        <button class="btn btn-ghost" id="goToDocsBtn" type="button">Как менять цены</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="landing">
+    <div class="landing-hero">
+      <div class="landing-main">
+        <h1>Калькулятор водосточной системы для частного дома</h1>
+        <p>
+          Клиент видит понятную форму и ориентировочную стоимость, а менеджер при необходимости быстро
+          обновляет прайс вручную или загружает файл цен. Подходит для сайта строительной компании.
+        </p>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="landingCtaBtn" type="button">Сделать расчёт</button>
+          <button class="btn btn-secondary" id="landingDownloadTemplateBtn" type="button">Скачать шаблон цен</button>
+        </div>
+        <div class="price-caption">
+          Шаблон цен — обычный JSON-файл. Его можно заполнить и загрузить в калькулятор одной кнопкой.
+        </div>
+      </div>
+
+      <aside class="landing-side">
+        <div class="kpi">
+          <div class="stat">
+            <div class="label">Режимы</div>
+            <div class="value">Быстрый / Точный</div>
+          </div>
+          <div class="stat">
+            <div class="label">Цены</div>
+            <div class="value">Ручные / JSON</div>
+          </div>
+        </div>
+        <div class="muted">
+          Важно: расчёт предварительный. Для коммерческого предложения менеджер уточняет схему карнизов
+          и точки слива.
+        </div>
+      </aside>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="title">Понятно клиенту</div>
+        <div class="desc">Без лишней “инженерки”: только базовые параметры и прозрачный результат.</div>
+      </div>
+      <div class="feature">
+        <div class="title">Удобно менеджеру</div>
+        <div class="desc">Можно быстро загрузить “цены менеджера” из файла или скачать шаблон.</div>
+      </div>
+      <div class="feature">
+        <div class="title">Готово для сайта</div>
+        <div class="desc">Один HTML-файл: быстро открыть, отправить, встроить или разместить на хостинге.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <!-- Якорь: сюда прокручиваем по CTA-кнопкам лендинга -->
+    <div id="calculator"></div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Параметры расчёта</h2>
+        <p class="muted">
+          Здесь только основные поля. Лишние технические настройки убраны, чтобы калькулятор был проще и понятнее.
+        </p>
+
+        <div class="section-title">1. Тип дома</div>
+        <div class="house-types" id="houseTypes">
+          <div class="house-option active" data-house="gable">
+            <div class="icon">🏠</div>
+            <div class="title">Двускатный</div>
+            <div class="desc">Самый частый вариант для частного дома.</div>
+          </div>
+
+          <div class="house-option" data-house="hip">
+            <div class="icon">🏡</div>
+            <div class="title">Вальмовый</div>
+            <div class="desc">Больше карнизов и чаще больше сливов.</div>
+          </div>
+
+          <div class="house-option" data-house="shed">
+            <div class="icon">🏘️</div>
+            <div class="title">Односкатный</div>
+            <div class="desc">Простой вариант для пристроек и небольших домов.</div>
+          </div>
+
+          <div class="house-option" data-house="rect">
+            <div class="icon">🏗️</div>
+            <div class="title">Прямоугольный</div>
+            <div class="desc">Условный типовой дом без лишней детализации.</div>
+          </div>
+        </div>
+
+        <div class="section-title">2. Режим расчёта</div>
+        <div class="switch-row">
+          <button class="toggle-btn active" id="modeQuickBtn" type="button">Быстрый</button>
+          <button class="toggle-btn" id="modeDetailedBtn" type="button">Точный</button>
+        </div>
+
+        <div class="note">
+          <strong>Быстрый режим:</strong> вводится общая длина карнизов.<br>
+          <strong>Точный режим:</strong> вводятся длины сторон отдельно.
+        </div>
+
+        <div class="section-title">3. Основные данные</div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="material">Материал системы</label>
+            <select id="material">
+              <option value="pvc">ПВХ</option>
+              <option value="metal">Металл</option>
+            </select>
+            <small>При смене материала базовые цены подставятся автоматически</small>
+          </div>
+
+          <div class="field">
+            <label for="houseHeight">Высота дома, м</label>
+            <input type="number" id="houseHeight" min="2" step="0.1" value="3.2" />
+          </div>
+        </div>
+
+        <div id="quickModeBlock">
+          <div class="section-title">4. Быстрый режим</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="totalLength">Общая длина карнизов, м</label>
+              <input type="number" id="totalLength" min="1" step="0.1" value="24" />
+            </div>
+          </div>
+        </div>
+
+        <div id="detailedModeBlock" class="hidden">
+          <div class="section-title">4. Точный режим</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="sideA">Сторона A, м</label>
+              <input type="number" id="sideA" min="0" step="0.1" value="8" />
+            </div>
+
+            <div class="field">
+              <label for="sideB">Сторона B, м</label>
+              <input type="number" id="sideB" min="0" step="0.1" value="8" />
+            </div>
+
+            <div class="field">
+              <label for="sideC">Сторона C, м</label>
+              <input type="number" id="sideC" min="0" step="0.1" value="4" />
+            </div>
+
+            <div class="field">
+              <label for="sideD">Сторона D, м</label>
+              <input type="number" id="sideD" min="0" step="0.1" value="4" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">5. Цены комплектующих</div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="priceGutter">Желоб 3 м, ₽</label>
+            <input type="number" id="priceGutter" value="700" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="pricePipe">Труба 3 м, ₽</label>
+            <input type="number" id="pricePipe" value="650" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceFunnel">Воронка, ₽</label>
+            <input type="number" id="priceFunnel" value="300" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceCorner">Угол желоба, ₽</label>
+            <input type="number" id="priceCorner" value="350" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceHook">Крюк / кронштейн, ₽</label>
+            <input type="number" id="priceHook" value="80" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceClamp">Хомут трубы, ₽</label>
+            <input type="number" id="priceClamp" value="90" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceConnector">Соединитель желоба, ₽</label>
+            <input type="number" id="priceConnector" value="180" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="pricePlug">Заглушка, ₽</label>
+            <input type="number" id="pricePlug" value="120" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceElbow">Колено, ₽</label>
+            <input type="number" id="priceElbow" value="180" min="0" step="1">
+          </div>
+
+          <div class="field">
+            <label for="priceOutlet">Сливной выпуск, ₽</label>
+            <input type="number" id="priceOutlet" value="170" min="0" step="1">
+          </div>
+        </div>
+
+        <div class="price-caption">
+          Менеджер может руками изменить любые цены перед расчётом.
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="calculateBtn" type="button">Рассчитать</button>
+          <!-- Отдельная кнопка: загрузка JSON-файла с ценами от менеджера -->
+          <button class="btn btn-secondary" id="loadManagerPricesBtn" type="button">Загрузить цены менеджера</button>
+          <!-- Отдельная кнопка: скачивание JSON-шаблона цен для менеджера -->
+          <button class="btn btn-secondary" id="downloadManagerPricesTemplateBtn" type="button">Скачать шаблон цен</button>
+          <button class="btn btn-secondary" id="resetBtn" type="button">Сбросить</button>
+        </div>
+        <!-- Скрытый input для выбора файла цен; открывается кнопкой выше -->
+        <input type="file" id="managerPricesFile" accept=".json,application/json" class="hidden" />
+      </section>
+
+      <section class="card">
+        <h2>Результат</h2>
+        <p class="muted">
+          Показывается ориентировочный состав системы, стоимость и короткие комментарии для менеджера или клиента.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Длина карнизов</div>
+            <div class="value" id="statLength">—</div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Стояки</div>
+            <div class="value" id="statDownpipes">—</div>
+          </div>
+
+          <div class="stat">
+            <div class="label">Стоимость</div>
+            <div class="value" id="statTotal">—</div>
+          </div>
+        </div>
+
+        <div class="result-box">
+          <h3>Комплектующие</h3>
+          <ul class="kit-list" id="kitList">
+            <li class="kit-item">
+              <div>
+                <div class="name">Пока нет расчёта</div>
+                <div class="meta">Нажмите «Рассчитать»</div>
+              </div>
+              <div class="qty">—</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="result-box">
+          <h3>Комментарий</h3>
+          <ul class="summary-list" id="summaryList">
+            <li>После расчёта здесь появятся краткие рекомендации.</li>
+          </ul>
+        </div>
+
+        <div id="messageBox"></div>
+      </section>
+    </div>
+
+    <section class="docs" id="docs">
+      <h2>Как менять цены</h2>
+      <p class="muted">
+        Ничего в коде менять не нужно. Менеджер меняет цены прямо в полях формы.
+        При смене материала подставляются базовые цены, а потом их можно вручную скорректировать.
+      </p>
+
+      <p><strong>Логика:</strong></p>
+      <ul>
+        <li>выбрали материал → калькулятор подставил базовые цены;</li>
+        <li>менеджер поправил нужные цифры руками;</li>
+        <li>нажали «Рассчитать» → итог считается по тем ценам, что стоят в форме сейчас.</li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    let mode = 'quick';
+    let selectedHouse = 'gable';
+
+    const houseDefaults = {
+      gable: { label: 'Двускатный', downpipes: 2, lines: 2, corners: 4 },
+      hip:   { label: 'Вальмовый', downpipes: 4, lines: 4, corners: 4 },
+      shed:  { label: 'Односкатный', downpipes: 1, lines: 1, corners: 2 },
+      rect:  { label: 'Прямоугольный', downpipes: 2, lines: 2, corners: 4 }
+    };
+
+    const pricePresets = {
+      pvc: {
+        gutter: 700,
+        connector: 180,
+        hook: 80,
+        plug: 120,
+        corner: 350,
+        funnel: 300,
+        pipe: 650,
+        elbow: 180,
+        clamp: 90,
+        outlet: 170
+      },
+      metal: {
+        gutter: 950,
+        connector: 280,
+        hook: 120,
+        plug: 180,
+        corner: 540,
+        funnel: 490,
+        pipe: 870,
+        elbow: 310,
+        clamp: 140,
+        outlet: 320
+      }
+    };
+
+    function qs(selector){
+      return document.querySelector(selector);
+    }
+
+    function qsa(selector){
+      return document.querySelectorAll(selector);
+    }
+
+    function num(value){
+      const n = parseFloat(value);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function ceil(value){
+      return Math.ceil(value);
+    }
+
+    function money(value){
+      return new Intl.NumberFormat('ru-RU').format(Math.round(value)) + ' ₽';
+    }
+
+    function format(value, digits = 1){
+      return new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function setMode(newMode){
+      mode = newMode;
+
+      qs('#modeQuickBtn').classList.toggle('active', mode === 'quick');
+      qs('#modeDetailedBtn').classList.toggle('active', mode === 'detailed');
+      qs('#quickModeBlock').classList.toggle('hidden', mode !== 'quick');
+      qs('#detailedModeBlock').classList.toggle('hidden', mode !== 'detailed');
+    }
+
+    function selectHouse(card){
+      qsa('.house-option').forEach(item => item.classList.remove('active'));
+      card.classList.add('active');
+      selectedHouse = card.dataset.house;
+    }
+
+    function getTotalLength(){
+      if(mode === 'quick'){
+        return num(qs('#totalLength').value);
+      }
+
+      return (
+        num(qs('#sideA').value) +
+        num(qs('#sideB').value) +
+        num(qs('#sideC').value) +
+        num(qs('#sideD').value)
+      );
+    }
+
+    function applyMaterialPrices(material){
+      const preset = pricePresets[material];
+
+      qs('#priceGutter').value = preset.gutter;
+      qs('#priceConnector').value = preset.connector;
+      qs('#priceHook').value = preset.hook;
+      qs('#pricePlug').value = preset.plug;
+      qs('#priceCorner').value = preset.corner;
+      qs('#priceFunnel').value = preset.funnel;
+      qs('#pricePipe').value = preset.pipe;
+      qs('#priceElbow').value = preset.elbow;
+      qs('#priceClamp').value = preset.clamp;
+      qs('#priceOutlet').value = preset.outlet;
+    }
+
+    function getPricesFromForm(){
+      return {
+        gutter: num(qs('#priceGutter').value),
+        connector: num(qs('#priceConnector').value),
+        hook: num(qs('#priceHook').value),
+        plug: num(qs('#pricePlug').value),
+        corner: num(qs('#priceCorner').value),
+        funnel: num(qs('#priceFunnel').value),
+        pipe: num(qs('#pricePipe').value),
+        elbow: num(qs('#priceElbow').value),
+        clamp: num(qs('#priceClamp').value),
+        outlet: num(qs('#priceOutlet').value)
+      };
+    }
+
+    function downloadJson(filename, data){
+      const content = JSON.stringify(data, null, 2);
+      const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadManagerPricesTemplate(){
+      const prices = getPricesFromForm();
+      const material = qs('#material').value;
+
+      // Шаблон: цены + минимальная "служебная" информация, не мешающая импорту
+      const template = {
+        _meta: {
+          title: 'Шаблон цен менеджера — Калькулятор водосточной системы',
+          generatedAt: new Date().toISOString(),
+          material,
+          note: 'Можно оставить только поля цен (gutter, pipe, funnel...). Любые лишние поля будут проигнорированы.'
+        },
+        ...prices
+      };
+
+      const safeDate = new Date().toISOString().slice(0, 10);
+      downloadJson(`prices-manager-${material}-${safeDate}.json`, template);
+    }
+
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if(!el){
+        return;
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function applyPricesFromManager(data){
+      const map = {
+        gutter: '#priceGutter',
+        pipe: '#pricePipe',
+        funnel: '#priceFunnel',
+        corner: '#priceCorner',
+        hook: '#priceHook',
+        clamp: '#priceClamp',
+        connector: '#priceConnector',
+        plug: '#pricePlug',
+        elbow: '#priceElbow',
+        outlet: '#priceOutlet'
+      };
+
+      let appliedCount = 0;
+      Object.keys(map).forEach(key => {
+        if(Object.prototype.hasOwnProperty.call(data, key)){
+          const value = num(data[key]);
+          if(value >= 0){
+            qs(map[key]).value = String(Math.round(value));
+            appliedCount += 1;
+          }
+        }
+      });
+
+      return appliedCount;
+    }
+
+    function loadManagerPricesFromFile(file){
+      const messageBox = qs('#messageBox');
+
+      if(!file){
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function(event){
+        try{
+          const json = JSON.parse(String(event.target.result || '{}'));
+          const appliedCount = applyPricesFromManager(json);
+
+          if(appliedCount === 0){
+            messageBox.innerHTML = `
+              <div class="alert alert-danger">
+                Файл прочитан, но не найдено ни одного корректного поля цены.
+              </div>
+            `;
+            return;
+          }
+
+          messageBox.innerHTML = `
+            <div class="alert alert-success">
+              Цены менеджера успешно загружены: обновлено ${appliedCount} позиций.
+            </div>
+          `;
+        }catch(error){
+          messageBox.innerHTML = `
+            <div class="alert alert-danger">
+              Не удалось прочитать JSON-файл. Проверьте формат файла цен.
+            </div>
+          `;
+        }
+      };
+
+      reader.onerror = function(){
+        messageBox.innerHTML = `
+          <div class="alert alert-danger">
+            Ошибка чтения файла. Попробуйте выбрать файл снова.
+          </div>
+        `;
+      };
+
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function calculate(){
+      const totalLength = getTotalLength();
+      const height = num(qs('#houseHeight').value);
+      const defaults = houseDefaults[selectedHouse];
+      const prices = getPricesFromForm();
+      const messageBox = qs('#messageBox');
+
+      if(totalLength <= 0 || height <= 0){
+        messageBox.innerHTML = `
+          <div class="alert alert-danger">
+            Заполните корректно длину карнизов и высоту дома.
+          </div>
+        `;
+        return;
+      }
+
+      const gutterLines = defaults.lines;
+      const downpipes = defaults.downpipes;
+      const corners = defaults.corners;
+
+      // Технические допущения скрыты от пользователя
+      const hookStep = 0.6;
+      const clampStep = 1.8;
+
+      const gutters = ceil(totalLength / 3);
+      const hooks = ceil(totalLength / hookStep);
+      const connectors = Math.max(0, gutters - gutterLines);
+      const pipes = ceil((height * downpipes) / 3);
+      const clamps = ceil((height * downpipes) / clampStep);
+      const funnels = downpipes;
+      const elbows = downpipes * 2;
+      const outlets = downpipes;
+      const plugs = gutterLines * 2;
+
+      const items = [
+        { name:'Желоб 3 м', qty:gutters, price:prices.gutter, meta:'Основной элемент системы' },
+        { name:'Соединитель желоба', qty:connectors, price:prices.connector, meta:'Стыковка желобов' },
+        { name:'Крюк / кронштейн', qty:hooks, price:prices.hook, meta:'Крепление желоба' },
+        { name:'Заглушка', qty:plugs, price:prices.plug, meta:'Закрытие торцов' },
+        { name:'Угол желоба', qty:corners, price:prices.corner, meta:'Для углов дома' },
+        { name:'Воронка', qty:funnels, price:prices.funnel, meta:'Переход к трубе' },
+        { name:'Труба 3 м', qty:pipes, price:prices.pipe, meta:'Вертикальный водоотвод' },
+        { name:'Колено', qty:elbows, price:prices.elbow, meta:'Обычно 2 шт. на стояк' },
+        { name:'Хомут трубы', qty:clamps, price:prices.clamp, meta:'Крепление к стене' },
+        { name:'Сливной выпуск', qty:outlets, price:prices.outlet, meta:'Нижний отвод воды' }
+      ];
+
+      let total = 0;
+      items.forEach(item => {
+        total += item.qty * item.price;
+      });
+
+      qs('#statLength').textContent = format(totalLength) + ' м';
+      qs('#statDownpipes').textContent = String(downpipes);
+      qs('#statTotal').textContent = money(total);
+
+      qs('#kitList').innerHTML = items.map(item => `
+        <li class="kit-item">
+          <div>
+            <div class="name">${item.name}</div>
+            <div class="meta">${item.meta}</div>
+          </div>
+          <div class="qty">${item.qty} шт.</div>
+        </li>
+      `).join('');
+
+      const comments = [
+        `Выбран тип дома: ${defaults.label}.`,
+        `Для этой схемы рассчитано ${downpipes} стояк(а/ов).`,
+        `Ориентировочно потребуется ${gutters} шт. желобов и ${pipes} шт. труб.`,
+        `Цены для расчёта взяты из полей формы и могут быть вручную скорректированы менеджером.`
+      ];
+
+      if(totalLength > 30){
+        comments.push('Дом довольно большой — перед финальным расчётом лучше уточнить схему карнизов и точки слива.');
+      }
+
+      if(downpipes === 1 && totalLength > 12){
+        comments.push('Для такой длины карниза одного стояка может быть недостаточно.');
+      }
+
+      qs('#summaryList').innerHTML = comments.map(text => `<li>${text}</li>`).join('');
+
+      messageBox.innerHTML = `
+        <div class="alert alert-success">
+          Расчёт выполнен. Это предварительный набор комплектующих для частного дома.
+        </div>
+      `;
+    }
+
+    function resetForm(){
+      selectedHouse = 'gable';
+      qsa('.house-option').forEach(item => item.classList.remove('active'));
+      qsa('.house-option')[0].classList.add('active');
+
+      setMode('quick');
+
+      qs('#material').value = 'pvc';
+      qs('#houseHeight').value = '3.2';
+
+      qs('#totalLength').value = '24';
+      qs('#sideA').value = '8';
+      qs('#sideB').value = '8';
+      qs('#sideC').value = '4';
+      qs('#sideD').value = '4';
+
+      applyMaterialPrices('pvc');
+
+      qs('#statLength').textContent = '—';
+      qs('#statDownpipes').textContent = '—';
+      qs('#statTotal').textContent = '—';
+
+      qs('#kitList').innerHTML = `
+        <li class="kit-item">
+          <div>
+            <div class="name">Пока нет расчёта</div>
+            <div class="meta">Нажмите «Рассчитать»</div>
+          </div>
+          <div class="qty">—</div>
+        </li>
+      `;
+
+      qs('#summaryList').innerHTML = '<li>После расчёта здесь появятся краткие рекомендации.</li>';
+      qs('#messageBox').innerHTML = '';
+    }
+
+    qsa('.house-option').forEach(card => {
+      card.addEventListener('click', () => selectHouse(card));
+    });
+
+    qs('#modeQuickBtn').addEventListener('click', () => setMode('quick'));
+    qs('#modeDetailedBtn').addEventListener('click', () => setMode('detailed'));
+
+    qs('#material').addEventListener('change', function(){
+      applyMaterialPrices(this.value);
+    });
+
+    qs('#loadManagerPricesBtn').addEventListener('click', function(){
+      // Открываем выбор файла по нажатию отдельной кнопки менеджера
+      qs('#managerPricesFile').click();
+    });
+
+    qs('#managerPricesFile').addEventListener('change', function(){
+      loadManagerPricesFromFile(this.files && this.files[0]);
+      this.value = '';
+    });
+
+    qs('#downloadManagerPricesTemplateBtn').addEventListener('click', function(){
+      downloadManagerPricesTemplate();
+    });
+
+    qs('#goToCalculatorBtn').addEventListener('click', function(){
+      scrollToId('calculator');
+    });
+
+    qs('#goToDocsBtn').addEventListener('click', function(){
+      scrollToId('docs');
+    });
+
+    qs('#landingCtaBtn').addEventListener('click', function(){
+      scrollToId('calculator');
+    });
+
+    qs('#landingDownloadTemplateBtn').addEventListener('click', function(){
+      downloadManagerPricesTemplate();
+    });
+
+    qs('#calculateBtn').addEventListener('click', calculate);
+    qs('#resetBtn').addEventListener('click', resetForm);
+
+    applyMaterialPrices(qs('#material').value);
+    calculate();
+  </script>
+</body>
+</html>
